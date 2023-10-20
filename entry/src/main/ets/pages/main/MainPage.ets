@@ -46,7 +46,7 @@ struct MainPage {
       Tabs({ barPosition: BarPosition.End, controller: this.controller }) {
         TabContent() {
           Column() {
-            HomePage()
+            HomePage({currentIndex: this.currentIndex})
           }
           .width('100%')
           .height('100%')
@@ -61,7 +61,7 @@ struct MainPage {
         }.tabBar(this.TabBuilder(1, this.headTitles[1]))
         TabContent() {
           Column() {
-            MePage()
+            MePage({currentIndex: this.currentIndex})
           }
           .width('100%')
           .height('100%')

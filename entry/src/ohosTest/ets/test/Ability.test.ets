@@ -30,6 +30,17 @@ export default function abilityTest() {
       // Defines a variety of assertion methods, which are used to declare expected boolean conditions.
       expect(a).assertContain(b)
       expect(a).assertEqual(a)
+
+      const str = 'username=yzjbenyq&password=yezijian520';
+      const regex = /username=([^&]*)/;
+      const match = str.match(regex);
+      if (match) {
+        const extracted = match[1];
+        expect(extracted).assertEqual('yzjbenyq')
+        console.log(extracted); // 输出: yzjbenyq
+      } else {
+        console.log('未找到匹配');
+      }
     })
   })
 }

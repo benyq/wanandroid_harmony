@@ -1,6 +1,10 @@
 import UIAbility from '@ohos.app.ability.UIAbility';
 import hilog from '@ohos.hilog';
 import window from '@ohos.window';
+import dataPreferences from '@ohos.data.preferences';
+import PreferenceUtil from '../common/PreferenceUtil';
+import UserDataCenter from '../common/UserDataCenter';
+import Logger from '../common/utils/Logger';
 
 export default class EntryAbility extends UIAbility {
   onCreate(want, launchParam) {
@@ -15,7 +19,8 @@ export default class EntryAbility extends UIAbility {
     // Main window is created, set main page for this ability
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
 
-    windowStage.loadContent('pages/MainPage', (err, data) => {
+    this.initializePreference()
+    windowStage.loadContent('pages/main/MainPage', (err, data) => {
       if (err.code) {
         hilog.error(0x0000, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err) ?? '');
         return;
@@ -37,5 +42,15 @@ export default class EntryAbility extends UIAbility {
   onBackground() {
     // Ability has back to background
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onBackground');
+  }
+
+  async initializePreference() {
+    try {
+      let preference =  await dataPreferences.getPreferences(this.context,'wan-android')
+      PreferenceUtil.setPreferences(preference)
+      await UserDataCenter.prepareData()
+    }catch (error) {
+      Logger.error('initializePreference fail ' + error);
+    }
   }
 }

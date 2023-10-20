@@ -15,6 +15,8 @@ struct ArticlePage {
   build(){
     Column(){
       Web({src: this.articleUrl, controller: this.webController})
+        .domStorageAccess(true)
+        .mixedMode(MixedMode.All)
     }
   }
 }

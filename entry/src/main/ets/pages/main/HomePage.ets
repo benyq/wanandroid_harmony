@@ -1,8 +1,9 @@
 import router from '@ohos.router';
-import Api from '../common/http/Api';
-import ArticleModel from '../common/model/ArticleModel';
-import BannerModel from '../common/model/BannerModel';
-import {entitiesDecode} from '../common/utils/StringUtil';
+import Api from '../../common/http/Api';
+import ArticleModel from '../../common/model/ArticleModel';
+import BannerModel from '../../common/model/BannerModel';
+import Logger from '../../common/utils/Logger';
+import {entitiesDecode} from '../../common/utils/StringUtil';
 
 @Component
 export default struct HomePage {
@@ -13,6 +14,15 @@ export default struct HomePage {
   private swiperController: SwiperController = new SwiperController()
   private isLoadingMore = false;
   private initIndex = 0;
+
+  @Prop @Watch('onPageChanged') currentIndex: number
+  private ownIndex = 0
+  onPageChanged() {
+    if (this.ownIndex === this.currentIndex) {
+      //页面发生了切换
+      Logger.info('HomePage onPageShow ' + this.currentIndex)
+    }
+  }
 
   aboutToAppear() {
     Api.getBanner().then((data) => {
@@ -81,6 +91,9 @@ export default struct HomePage {
                     .width('100%')
                     .height(160)
                     .objectFit(ImageFit.Cover)
+                    .onClick(()=>{
+                      this.gotoArticle(item.url)
+                    })
                 }, item => JSON.stringify(item))
               }
               .width('100%')
@@ -102,12 +115,7 @@ export default struct HomePage {
               this.articleItem(index, item)
             }
             .onClick(()=>{
-              router.pushUrl({
-                url: 'pages/ArticlePage',
-                params:{
-                  link: item.link
-                }
-              })
+              this.gotoArticle(item.link)
             })
           }, item => JSON.stringify(item))
         }
@@ -145,6 +153,15 @@ export default struct HomePage {
     }
     .width('100%')
     .height('100%')
+  }
+
+  gotoArticle(url: string) {
+    router.pushUrl({
+      url: 'pages/article/ArticlePage',
+      params:{
+        link: url
+      }
+    })
   }
 }
 

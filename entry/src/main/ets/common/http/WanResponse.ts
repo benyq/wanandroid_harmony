@@ -10,6 +10,10 @@ export default class WanResponse<T>{
     this.errorMsg = errorMsg
   }
 
+  isSuccess(): boolean {
+    return this.errorCode === 0
+  }
+
   static success<T>(data: T): WanResponse<T> {
     return new WanResponse(data, 0, "")
   }
