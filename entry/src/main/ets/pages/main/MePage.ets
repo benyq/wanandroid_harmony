@@ -5,19 +5,24 @@ import Api from '../../common/http/Api';
 import UserInfoModel from '../../common/model/UserInfoModel';
 import Logger from '../../common/utils/Logger';
 import UserDataCenter from '../../common/UserDataCenter';
+import { MainChildState } from './MainChildState';
 
 
 @Component
 export default struct MePage {
-  @Prop @Watch('onPageChanged') currentIndex: number
+  @Consume @Watch('onPageChanged') childState: MainChildState
   private ownIndex = 2
   @State collectCount: string = '-'
   @State coinCount: string = '-'
   @State level: string = '-'
   @State rank: string = '-'
   @State username: string = '-'
+  @State showUserInfo: boolean = false;
 
   async getUserInfo() {
+    if (!UserDataCenter.isLogin()) {
+      return
+    }
     let error = null
     try {
       let response = await Api.userInfo()
@@ -40,20 +45,23 @@ export default struct MePage {
   }
 
   onPageChanged() {
-    if (this.ownIndex === this.currentIndex) {
+    Logger.info('MePage onPageShow: ' + JSON.stringify(this.childState))
+    if (this.ownIndex === this.childState.index) {
       //页面发生了切换
-      Logger.info('MePage onPageShow: ' + this.currentIndex)
+      if (!this.showUserInfo && this.childState.show) {
+        this.getUserInfo()
+      }
     }
   }
 
   aboutToAppear() {
-    if (UserDataCenter.isLogin()) {
-      this.getUserInfo()
-    }
+    Logger.info('MePage aboutToAppear: ')
+    this.getUserInfo()
   }
 
   updateUserInfo(userInfo: UserInfoModel) {
     Logger.error('updateUserInfo ' + JSON.stringify(userInfo))
+    this.showUserInfo = true;
     this.collectCount = userInfo.userInfo.collectIds.length.toString()
     this.coinCount = userInfo.coinInfo.coinCount.toString()
     this.level = userInfo.coinInfo.level.toString()
@@ -196,6 +204,6 @@ struct settingSwitchCell {
 @Component
 struct MePagePreview {
   build() {
-    MePage({ currentIndex: 2 })
+    MePage()
   }
 }

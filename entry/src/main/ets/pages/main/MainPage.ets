@@ -1,4 +1,6 @@
+import Logger from '../../common/utils/Logger';
 import HomePage from './HomePage';
+import { MainChildState } from './MainChildState';
 import MePage from './MePage';
 
 
@@ -10,10 +12,28 @@ struct MainPage {
   @State fontColor: string = '#182431'
   @State selectedFontColor: string = '#007DFF'
   @State title: string = '';
+  @Provide childState: MainChildState = new MainChildState(0, true);
   private readonly headTitles = ['首页', '项目', '我']
+
+  changeChildState(index, show) {
+    this.childState.index = index
+    this.childState.show = show
+  }
 
   aboutToAppear() {
     this.title = this.headTitles[0]
+  }
+
+  onPageShow() {
+    Logger.info('MainPage onPageShow: ')
+    this.currentIndex = this.currentIndex;
+    this.childState = new MainChildState(this.currentIndex, true);
+  }
+
+  onPageHide() {
+    Logger.info('MainPage onPageHide: ')
+    // this.childState.show = false
+    this.childState = new MainChildState(this.currentIndex, false);
   }
 
   @Builder TabBuilder(index: number, name: string) {
@@ -46,7 +66,7 @@ struct MainPage {
       Tabs({ barPosition: BarPosition.End, controller: this.controller }) {
         TabContent() {
           Column() {
-            HomePage({currentIndex: this.currentIndex})
+            HomePage({ currentIndex: this.currentIndex })
           }
           .width('100%')
           .height('100%')
@@ -59,9 +79,10 @@ struct MainPage {
           .width('100%')
           .height('100%')
         }.tabBar(this.TabBuilder(1, this.headTitles[1]))
+
         TabContent() {
           Column() {
-            MePage({currentIndex: this.currentIndex})
+            MePage()
           }
           .width('100%')
           .height('100%')
@@ -73,6 +94,7 @@ struct MainPage {
       .onChange((index: number) => {
         this.title = this.headTitles[index]
         this.currentIndex = index
+        this.changeChildState(this.currentIndex, true)
       })
       .layoutWeight(1)
     }

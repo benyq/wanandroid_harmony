@@ -6,8 +6,8 @@ const KEY_USERNAME = "KEY_USERNAME";
 
 export default new class UserDataCenter {
 
-  private token = '';
-  private username = '';
+  token = '';
+  username = '';
 
 
   async prepareData() {
@@ -22,6 +22,7 @@ export default new class UserDataCenter {
   }
 
   isLogin() {
+    Logger.debug('isLogin: ' + this.username)
     return this.username.length !== 0
   }
 

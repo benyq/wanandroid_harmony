@@ -48,4 +48,4 @@ class Logger {
   }
 }
 
-export default new Logger('wanAndroid', 0xFF00);
+export default new Logger('tagAndroid', 0xFF00);
